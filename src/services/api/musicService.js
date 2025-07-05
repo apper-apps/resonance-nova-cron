@@ -2,6 +2,61 @@ import mockTracks from '@/services/mockData/tracks.json';
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+// Helper function to check if Spotify is connected
+const isSpotifyConnected = () => {
+  return !!localStorage.getItem('spotify_access_token');
+};
+
+// Helper function to make authenticated Spotify API calls
+const makeSpotifyRequest = async (endpoint) => {
+  const accessToken = localStorage.getItem('spotify_access_token');
+  if (!accessToken) {
+    throw new Error('Spotify not connected');
+  }
+
+  const response = await fetch(`https://api.spotify.com/v1${endpoint}`, {
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Spotify authentication expired');
+    }
+    throw new Error(`Spotify API error: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+// Helper function to convert Spotify track to internal format
+const convertSpotifyTrack = (spotifyTrack) => {
+  return {
+    id: spotifyTrack.id,
+    Id: spotifyTrack.id, // For compatibility
+    title: spotifyTrack.name,
+    artist: spotifyTrack.artists?.map(a => a.name).join(', ') || 'Unknown Artist',
+    album: spotifyTrack.album?.name || 'Unknown Album',
+    duration: Math.floor(spotifyTrack.duration_ms / 1000),
+    imageUrl: spotifyTrack.album?.images?.[0]?.url || null,
+    previewUrl: spotifyTrack.preview_url
+  };
+};
+
+// Helper function to convert Spotify playlist to internal format
+const convertSpotifyPlaylist = (spotifyPlaylist) => {
+  return {
+    id: spotifyPlaylist.id,
+    name: spotifyPlaylist.name,
+    description: spotifyPlaylist.description,
+    tracks: spotifyPlaylist.tracks,
+    imageUrl: spotifyPlaylist.images?.[0]?.url || null,
+    owner: spotifyPlaylist.owner?.display_name || 'Unknown'
+  };
+};
+
 export const musicService = {
   async searchTracks(query) {
     await delay(800);
@@ -9,12 +64,19 @@ export const musicService = {
     if (!query || query.trim() === '') {
       throw new Error('Search query cannot be empty');
     }
-    
-    // Simulate API error occasionally
-    if (Math.random() < 0.1) {
-      throw new Error('Failed to connect to music service');
+
+    // Use Spotify API if connected
+    if (isSpotifyConnected()) {
+      try {
+        const data = await makeSpotifyRequest(`/search?q=${encodeURIComponent(query)}&type=track&limit=20`);
+        return data.tracks.items.map(convertSpotifyTrack);
+      } catch (error) {
+        console.error('Spotify search failed, falling back to mock data:', error);
+        // Fall through to mock data
+      }
     }
-    
+
+    // Fallback to mock data
     const searchTerm = query.toLowerCase();
     const results = mockTracks.filter(track => 
       track.title.toLowerCase().includes(searchTerm) ||
@@ -22,7 +84,79 @@ export const musicService = {
       track.album.toLowerCase().includes(searchTerm)
     );
     
-    return results.slice(0, 10); // Return max 10 results
+    return results.slice(0, 10);
+  },
+
+  async searchAll(query) {
+    await delay(800);
+    
+    if (!query || query.trim() === '') {
+      throw new Error('Search query cannot be empty');
+    }
+
+    // Use Spotify API if connected
+    if (isSpotifyConnected()) {
+      try {
+        const data = await makeSpotifyRequest(`/search?q=${encodeURIComponent(query)}&type=track,playlist&limit=20`);
+        return {
+          tracks: data.tracks?.items?.map(convertSpotifyTrack) || [],
+          playlists: data.playlists?.items?.map(convertSpotifyPlaylist) || []
+        };
+      } catch (error) {
+        console.error('Spotify search failed, falling back to mock data:', error);
+        // Fall through to mock data
+      }
+    }
+
+    // Fallback to mock data (tracks only)
+    const searchTerm = query.toLowerCase();
+    const results = mockTracks.filter(track => 
+      track.title.toLowerCase().includes(searchTerm) ||
+      track.artist.toLowerCase().includes(searchTerm) ||
+      track.album.toLowerCase().includes(searchTerm)
+    );
+    
+    return {
+      tracks: results.slice(0, 10),
+      playlists: []
+    };
+  },
+
+  async getUserPlaylists() {
+    await delay(600);
+
+    // Use Spotify API if connected
+    if (isSpotifyConnected()) {
+      try {
+        const data = await makeSpotifyRequest('/me/playlists?limit=50');
+        return data.items.map(convertSpotifyPlaylist);
+      } catch (error) {
+        console.error('Failed to fetch Spotify playlists:', error);
+        return [];
+      }
+    }
+
+    // Return empty array if not connected
+    return [];
+  },
+
+  async getPlaylistTracks(playlistId) {
+    await delay(800);
+
+    // Use Spotify API if connected
+    if (isSpotifyConnected()) {
+      try {
+        const data = await makeSpotifyRequest(`/playlists/${playlistId}/tracks?limit=50`);
+        return data.items
+          .filter(item => item.track && item.track.type === 'track')
+          .map(item => convertSpotifyTrack(item.track));
+      } catch (error) {
+        console.error('Failed to fetch Spotify playlist tracks:', error);
+        throw new Error('Failed to load playlist tracks');
+      }
+    }
+
+    throw new Error('Spotify not connected');
   },
 
   async getPopularTracks() {
@@ -47,7 +181,7 @@ export const musicService = {
     
     return mockTracks
       .filter(t => t.Id !== parseInt(trackId) && t.artist === currentTrack.artist)
-.slice(0, 5);
+      .slice(0, 5);
   }
 };
 
@@ -156,7 +290,7 @@ export const spotifyService = {
 
   // Check if user is connected
   isConnected() {
-    return !!localStorage.getItem('spotify_access_token');
+return !!localStorage.getItem('spotify_access_token');
   },
 
   // Test connection
@@ -167,5 +301,65 @@ export const spotifyService = {
     } catch (error) {
       return { success: false, error: error.message };
     }
+  },
+
+  // Get user playlists
+  async getUserPlaylists() {
+    const accessToken = localStorage.getItem('spotify_access_token');
+    if (!accessToken) {
+      throw new Error('No access token found');
+    }
+
+    const response = await fetch(`${SPOTIFY_BASE_URL}/me/playlists?limit=50`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch playlists');
+    }
+
+    return response.json();
+  },
+
+  // Get playlist tracks
+  async getPlaylistTracks(playlistId) {
+    const accessToken = localStorage.getItem('spotify_access_token');
+    if (!accessToken) {
+      throw new Error('No access token found');
+    }
+
+    const response = await fetch(`${SPOTIFY_BASE_URL}/playlists/${playlistId}/tracks?limit=50`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch playlist tracks');
+    }
+
+    return response.json();
+  },
+
+  // Search for tracks and playlists
+  async search(query, types = 'track,playlist') {
+    const accessToken = localStorage.getItem('spotify_access_token');
+    if (!accessToken) {
+      throw new Error('No access token found');
+    }
+
+    const response = await fetch(`${SPOTIFY_BASE_URL}/search?q=${encodeURIComponent(query)}&type=${types}&limit=20`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to search');
+    }
+
+    return response.json();
   }
 };

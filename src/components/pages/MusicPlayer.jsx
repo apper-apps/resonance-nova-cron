@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
-import ParticleCanvas from '@/components/organisms/ParticleCanvas';
-import PlayerCard from '@/components/organisms/PlayerCard';
-import SearchBar from '@/components/molecules/SearchBar';
-import SearchResults from '@/components/organisms/SearchResults';
-import QueuePanel from '@/components/organisms/QueuePanel';
-import Button from '@/components/atoms/Button';
-import ApperIcon from '@/components/ApperIcon';
-import { musicService } from '@/services/api/musicService';
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import ApperIcon from "@/components/ApperIcon";
+import ParticleCanvas from "@/components/organisms/ParticleCanvas";
+import QueuePanel from "@/components/organisms/QueuePanel";
+import SearchResults from "@/components/organisms/SearchResults";
+import PlayerCard from "@/components/organisms/PlayerCard";
+import TrackCard from "@/components/organisms/TrackCard";
+import Button from "@/components/atoms/Button";
+import SearchBar from "@/components/molecules/SearchBar";
+import { musicService } from "@/services/api/musicService";
 
 const MusicPlayer = () => {
   const navigate = useNavigate();
@@ -20,10 +21,14 @@ const MusicPlayer = () => {
   const [volume, setVolume] = useState(80);
   const [queue, setQueue] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
+  const [playlistResults, setPlaylistResults] = useState([]);
+  const [playlists, setPlaylists] = useState([]);
+  const [selectedPlaylist, setSelectedPlaylist] = useState(null);
+  const [playlistTracks, setPlaylistTracks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showQueue, setShowQueue] = useState(false);
-
+  const [loadingPlaylists, setLoadingPlaylists] = useState(false);
   // Simulate audio playback
   useEffect(() => {
     let interval;
@@ -41,16 +46,54 @@ const MusicPlayer = () => {
     return () => clearInterval(interval);
   }, [isPlaying, currentTrack, duration]);
 
+// Load user playlists on mount
+  useEffect(() => {
+    loadUserPlaylists();
+  }, []);
+
+  const loadUserPlaylists = async () => {
+    setLoadingPlaylists(true);
+    try {
+      const userPlaylists = await musicService.getUserPlaylists();
+      setPlaylists(userPlaylists);
+    } catch (err) {
+      console.error('Failed to load playlists:', err);
+      // Don't show error toast for playlists as it's not critical
+    } finally {
+      setLoadingPlaylists(false);
+    }
+  };
+
   const handleSearch = async (query) => {
     setLoading(true);
     setError(null);
     try {
-      const results = await musicService.searchTracks(query);
-      setSearchResults(results);
-      toast.success(`Found ${results.length} tracks`);
+      const results = await musicService.searchAll(query);
+      setSearchResults(results.tracks || []);
+      setPlaylistResults(results.playlists || []);
+      
+      const totalResults = (results.tracks?.length || 0) + (results.playlists?.length || 0);
+      toast.success(`Found ${totalResults} results`);
     } catch (err) {
       setError(err.message);
-      toast.error('Failed to search tracks');
+      toast.error('Failed to search');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSelectPlaylist = async (playlist) => {
+    setSelectedPlaylist(playlist);
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const tracks = await musicService.getPlaylistTracks(playlist.id);
+      setPlaylistTracks(tracks);
+      toast.success(`Loaded ${tracks.length} tracks from "${playlist.name}"`);
+    } catch (err) {
+      setError(err.message);
+      toast.error('Failed to load playlist tracks');
     } finally {
       setLoading(false);
     }
@@ -115,11 +158,13 @@ const MusicPlayer = () => {
     toast.success('Queue cleared');
   };
 
-  const handleRetry = () => {
+const handleRetry = () => {
     setError(null);
     setSearchResults([]);
+    setPlaylistResults([]);
+    setSelectedPlaylist(null);
+    setPlaylistTracks([]);
   };
-
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <ParticleCanvas 
@@ -173,26 +218,124 @@ const MusicPlayer = () => {
           </div>
         </motion.header>
 
-        {/* Main Content */}
+{/* Main Content */}
         <div className="px-6 pb-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Column - Search and Results */}
             <div className="lg:col-span-2 space-y-8">
               <SearchBar
                 onSearch={handleSearch}
-                placeholder="Search for tracks, artists, or albums..."
+                placeholder="Search for tracks, artists, albums, or playlists..."
               />
               
-              <SearchResults
-                tracks={searchResults}
-                loading={loading}
-                error={error}
-                currentTrack={currentTrack}
-                isPlaying={isPlaying}
-                onPlayTrack={handlePlayTrack}
-                onAddToQueue={handleAddToQueue}
-                onRetry={handleRetry}
-              />
+              {/* User Playlists */}
+              {!selectedPlaylist && playlists.length > 0 && !searchResults.length && !playlistResults.length && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="space-y-4"
+                >
+                  <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                    <ApperIcon name="ListMusic" size={24} />
+                    Your Playlists
+                  </h2>
+                  <div className="grid gap-4">
+                    {playlists.map((playlist, index) => (
+                      <motion.div
+                        key={playlist.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                        className="glass rounded-xl p-4 hover:bg-white/10 transition-all duration-300"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                              <ApperIcon name="ListMusic" size={20} className="text-white" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-white">{playlist.name}</h4>
+                              <p className="text-gray-400 text-sm">
+                                {playlist.tracks?.total || 0} tracks
+                              </p>
+                            </div>
+                          </div>
+                          <Button
+                            variant="primary"
+                            size="sm"
+                            onClick={() => handleSelectPlaylist(playlist)}
+                          >
+                            <ApperIcon name="Play" size={16} className="mr-2" />
+                            Select
+                          </Button>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Selected Playlist Tracks */}
+              {selectedPlaylist && playlistTracks.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="space-y-4"
+                >
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                      <ApperIcon name="ListMusic" size={24} />
+                      {selectedPlaylist.name}
+                    </h2>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedPlaylist(null);
+                        setPlaylistTracks([]);
+                      }}
+                    >
+                      <ApperIcon name="ArrowLeft" size={16} className="mr-2" />
+                      Back to Playlists
+                    </Button>
+                  </div>
+                  <div className="grid gap-4">
+                    {playlistTracks.map((track, index) => (
+                      <motion.div
+                        key={track.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                      >
+                        <TrackCard
+                          track={track}
+                          isPlaying={isPlaying && currentTrack?.id === track.id}
+                          onPlay={handlePlayTrack}
+                          onAddToQueue={handleAddToQueue}
+                        />
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+              
+              {/* Search Results */}
+              {(searchResults.length > 0 || playlistResults.length > 0) && (
+                <SearchResults
+                  tracks={searchResults}
+                  playlists={playlistResults}
+                  loading={loading}
+                  error={error}
+                  currentTrack={currentTrack}
+                  isPlaying={isPlaying}
+                  onPlayTrack={handlePlayTrack}
+                  onAddToQueue={handleAddToQueue}
+                  onSelectPlaylist={handleSelectPlaylist}
+                  onRetry={handleRetry}
+                />
+              )}
             </div>
 
             {/* Right Column - Player and Queue */}
