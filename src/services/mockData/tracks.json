@@ -1,0 +1,202 @@
+[
+  {
+    "Id": 1,
+    "title": "Midnight Dreams",
+    "artist": "Luna Eclipse",
+    "album": "Nocturnal Visions",
+    "duration": 245,
+    "albumArt": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview1.mp3",
+    "genre": "Electronic"
+  },
+  {
+    "Id": 2,
+    "title": "Neon Lights",
+    "artist": "Synthwave Collective",
+    "album": "Retro Future",
+    "duration": 198,
+    "albumArt": "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview2.mp3",
+    "genre": "Synthwave"
+  },
+  {
+    "Id": 3,
+    "title": "Ocean Waves",
+    "artist": "Ambient Shores",
+    "album": "Coastal Meditation",
+    "duration": 312,
+    "albumArt": "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview3.mp3",
+    "genre": "Ambient"
+  },
+  {
+    "Id": 4,
+    "title": "Electric Storm",
+    "artist": "Luna Eclipse",
+    "album": "Nocturnal Visions",
+    "duration": 267,
+    "albumArt": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview4.mp3",
+    "genre": "Electronic"
+  },
+  {
+    "Id": 5,
+    "title": "City Nights",
+    "artist": "Urban Pulse",
+    "album": "Metropolitan Dreams",
+    "duration": 223,
+    "albumArt": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview5.mp3",
+    "genre": "Electronic"
+  },
+  {
+    "Id": 6,
+    "title": "Starlight Journey",
+    "artist": "Cosmic Wanderer",
+    "album": "Galactic Tales",
+    "duration": 289,
+    "albumArt": "https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview6.mp3",
+    "genre": "Space Ambient"
+  },
+  {
+    "Id": 7,
+    "title": "Digital Dreams",
+    "artist": "Synthwave Collective",
+    "album": "Retro Future",
+    "duration": 201,
+    "albumArt": "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview7.mp3",
+    "genre": "Synthwave"
+  },
+  {
+    "Id": 8,
+    "title": "Forest Whispers",
+    "artist": "Nature's Symphony",
+    "album": "Woodland Serenity",
+    "duration": 278,
+    "albumArt": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview8.mp3",
+    "genre": "Nature"
+  },
+  {
+    "Id": 9,
+    "title": "Quantum Leap",
+    "artist": "Future Bass",
+    "album": "Temporal Shift",
+    "duration": 234,
+    "albumArt": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview9.mp3",
+    "genre": "Future Bass"
+  },
+  {
+    "Id": 10,
+    "title": "Moonbeam Serenade",
+    "artist": "Ambient Shores",
+    "album": "Coastal Meditation",
+    "duration": 298,
+    "albumArt": "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview10.mp3",
+    "genre": "Ambient"
+  },
+  {
+    "Id": 11,
+    "title": "Cyber Pulse",
+    "artist": "Digital Horizon",
+    "album": "Binary Dreams",
+    "duration": 256,
+    "albumArt": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview11.mp3",
+    "genre": "Cyberpunk"
+  },
+  {
+    "Id": 12,
+    "title": "Aurora Borealis",
+    "artist": "Cosmic Wanderer",
+    "album": "Galactic Tales",
+    "duration": 321,
+    "albumArt": "https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview12.mp3",
+    "genre": "Space Ambient"
+  },
+  {
+    "Id": 13,
+    "title": "Rhythm of the Rain",
+    "artist": "Nature's Symphony",
+    "album": "Woodland Serenity",
+    "duration": 187,
+    "albumArt": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview13.mp3",
+    "genre": "Nature"
+  },
+  {
+    "Id": 14,
+    "title": "Neon Highway",
+    "artist": "Urban Pulse",
+    "album": "Metropolitan Dreams",
+    "duration": 243,
+    "albumArt": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview14.mp3",
+    "genre": "Electronic"
+  },
+  {
+    "Id": 15,
+    "title": "Astral Projection",
+    "artist": "Luna Eclipse",
+    "album": "Nocturnal Visions",
+    "duration": 276,
+    "albumArt": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview15.mp3",
+    "genre": "Electronic"
+  },
+  {
+    "Id": 16,
+    "title": "Gravity Waves",
+    "artist": "Future Bass",
+    "album": "Temporal Shift",
+    "duration": 219,
+    "albumArt": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview16.mp3",
+    "genre": "Future Bass"
+  },
+  {
+    "Id": 17,
+    "title": "Cascading Light",
+    "artist": "Digital Horizon",
+    "album": "Binary Dreams",
+    "duration": 294,
+    "albumArt": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview17.mp3",
+    "genre": "Cyberpunk"
+  },
+  {
+    "Id": 18,
+    "title": "Crystalline Waters",
+    "artist": "Ambient Shores",
+    "album": "Coastal Meditation",
+    "duration": 305,
+    "albumArt": "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview18.mp3",
+    "genre": "Ambient"
+  },
+  {
+    "Id": 19,
+    "title": "Retro Sunset",
+    "artist": "Synthwave Collective",
+    "album": "Retro Future",
+    "duration": 212,
+    "albumArt": "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview19.mp3",
+    "genre": "Synthwave"
+  },
+  {
+    "Id": 20,
+    "title": "Nebula Dance",
+    "artist": "Cosmic Wanderer",
+    "album": "Galactic Tales",
+    "duration": 267,
+    "albumArt": "https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=300&h=300&fit=crop",
+    "previewUrl": "https://example.com/preview20.mp3",
+    "genre": "Space Ambient"
+  }
+]
