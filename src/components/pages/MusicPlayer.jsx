@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import ParticleCanvas from '@/components/organisms/ParticleCanvas';
 import PlayerCard from '@/components/organisms/PlayerCard';
 import SearchBar from '@/components/molecules/SearchBar';
@@ -11,6 +12,7 @@ import ApperIcon from '@/components/ApperIcon';
 import { musicService } from '@/services/api/musicService';
 
 const MusicPlayer = () => {
+  const navigate = useNavigate();
   const [currentTrack, setCurrentTrack] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -138,26 +140,37 @@ const MusicPlayer = () => {
               Resonance
             </h1>
             <p className="text-gray-400 mt-1">Immersive Music Experience</p>
-          </div>
+</div>
           
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setShowQueue(!showQueue)}
-            className="relative"
-          >
-            <ApperIcon name="ListMusic" size={20} />
-            {queue.length > 0 && (
-              <motion.span
-                className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                {queue.length}
-              </motion.span>
-            )}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/settings')}
+              className="relative"
+            >
+              <ApperIcon name="Settings" size={20} />
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowQueue(!showQueue)}
+              className="relative"
+            >
+              <ApperIcon name="ListMusic" size={20} />
+              {queue.length > 0 && (
+                <motion.span
+                  className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {queue.length}
+                </motion.span>
+              )}
+            </Button>
+          </div>
         </motion.header>
 
         {/* Main Content */}
