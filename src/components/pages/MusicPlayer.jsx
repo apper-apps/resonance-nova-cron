@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import SearchResults from "@/components/organisms/SearchResults";
 import ApperIcon from "@/components/ApperIcon";
 import ParticleCanvas from "@/components/organisms/ParticleCanvas";
 import QueuePanel from "@/components/organisms/QueuePanel";
-import SearchResults from "@/components/organisms/SearchResults";
 import PlayerCard from "@/components/organisms/PlayerCard";
-import TrackCard from "@/components/organisms/TrackCard";
 import Button from "@/components/atoms/Button";
 import SearchBar from "@/components/molecules/SearchBar";
+import TrackCard from "@/components/molecules/TrackCard";
 import { musicService } from "@/services/api/musicService";
 
 const MusicPlayer = () => {
